@@ -1,0 +1,30 @@
+# 用户数据（运行时生成）
+memory/
+*.config.json
+personas/
+
+# 系统文件
+.DS_Store
+.claude/
+*.log
+
+# 敏感信息
+.env
+*.key
+*.token
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 临时文件
+*.tmp
+*.bak
+*~
+
+# 依赖（如果有）
+node_modules/
+package-lock.json
+.claude/
