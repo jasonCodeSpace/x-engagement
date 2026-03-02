@@ -28,18 +28,27 @@ x-engagement/
 ├── SKILL.md                    # 主入口（本文件）
 ├── docs/
 │   ├── onboarding.md           # Onboarding 流程
+│   ├── browser-operations.md   # 浏览器操作模块（基于 Chirp）
+│   ├── comment-rules.md        # 评论规则（重要！防止错误）
 │   ├── human-behavior.md       # 人类行为模拟规范
 │   ├── memory-system.md        # 记忆系统设计
 │   ├── cron-jobs.md            # 定时任务
 │   ├── comment-generation.md   # 评论生成逻辑
 │   └── natural-language-parser.md # 自然语言时间解析
+├── playbooks/
+│   ├── comment-strategies.md   # 评论策略（有效/无效）
+│   └── changelog.md            # 策略变更记录
+├── data/
+│   └── engagement/
+│       └── YYYY-MM-DD.json     # 每日评论数据
 ├── templates/
 │   ├── persona.md              # Persona 模板
 │   ├── config.json             # 配置模板
 │   └── daily-log.md            # 每日日志模板
 └── scripts/
     ├── setup-cron.sh           # 设置定时任务
-    └── check-onboarding.sh     # 检查状态
+    ├── check-onboarding.sh     # 检查状态
+    └── daily-review.sh         # 每日复盘脚本
 ```
 
 ---
@@ -123,16 +132,47 @@ memory/daily/hotspots/
 
 ### 5. 刷推流程
 
+**⚠️ 重要规则（必须遵守）：**
+
+1. **只在 Following 的 Recent 页面评论**（不是 Popular）
+2. **评论前检查历史**（避免重复评论同一博主）
+3. **记录所有评论**（保存到历史文件）
+
+**详见：** `docs/comment-rules.md`（必读！）
+
 **For You 页面：**
 1. 浏览（真人滚动模式）
 2. 关注（根据配置条件）
 
 **Following 页面：**
-1. 点赞（有价值的推文）
-2. 评论（2小时内，使用 persona 风格）
-3. 记录评论到历史
+1. 确保是 Recent（不是 Popular）
+2. 点赞（有价值的推文）
+3. 评论（2小时内，使用 persona 风格）
+4. 记录评论到历史（避免重复）
 
 **详见：** `docs/comment-generation.md`
+
+---
+
+### 6. 浏览器操作（基于 Chirp）
+
+**使用 `profile=openclaw`：**
+- 独立浏览器进程，100% 稳定
+- 不依赖 Chrome 扩展（Browser Relay 不稳定）
+- 支持 DOM 操作 + 人类行为模拟
+
+**核心操作：**
+- 点赞（带随机延迟）
+- 评论（使用 persona 风格）
+- 滚动（模拟人类）
+- 关注（根据条件）
+
+**Token 优化：**
+- 避免频繁 snapshot
+- 使用 compact snapshot
+- 直接操作 DOM
+
+**详见：** `docs/browser-operations.md`
 
 ---
 
@@ -172,6 +212,68 @@ Bot: 读取配置...
 | 定时任务 | 每日热点总结 |
 | 避免矛盾 | 评论前检查历史记录 |
 | 结构化设计 | 多文件组织，易于维护 |
+
+---
+
+## 自我进化系统
+
+### 核心理念
+
+> 没有记忆的AI，只是一个聪明的工具。
+> 有记忆且能进化的AI，才是会成长的伙伴。
+
+### 进化闭环
+
+```
+采集数据 → 分析对比 → 得出结论 → 更新规则 → 下次执行
+```
+
+### 三大机制
+
+**1. Playbook 系统**
+- `playbooks/comment-strategies.md` - 记录有效/无效策略
+- `playbooks/changelog.md` - 记录策略变更
+- Agent 可以更新自己的规则
+
+**2. 数据采集**
+- `data/engagement/YYYY-MM-DD.json` - 每日评论数据
+- 记录：时间、作者、内容、结果
+- 用于后续分析和优化
+
+**3. 每日复盘（22:00）**
+- 统计今日数据
+- 分析有效策略
+- 更新 Playbook
+- 生成明日建议
+- 推送报告给用户
+
+### 文件结构
+
+```
+x-engagement/
+├── playbooks/
+│   ├── comment-strategies.md  # 评论策略（有效/无效）
+│   └── changelog.md           # 策略变更记录
+├── data/
+│   └── engagement/
+│       └── YYYY-MM-DD.json    # 每日评论数据
+└── scripts/
+    └── daily-review.sh        # 每日复盘脚本
+```
+
+### 使用示例
+
+**Agent 学习过程**：
+1. 发现「妙啊」评论效果好
+2. 在 Playbook 中记录：「妙啊」适用于技术分享，数据支撑：2026-03-02
+3. 下次刷推时读取这条规则
+4. 考虑在类似推文上使用相同策略
+
+**进化效果**：
+- Agent 越用越聪明
+- 自动学习什么评论有效
+- 持续优化策略
+- 避免重复错误
 
 ---
 

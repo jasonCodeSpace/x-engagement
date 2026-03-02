@@ -1,7 +1,11 @@
 # 用户数据（运行时生成）
 memory/
+data/
 *.config.json
 personas/
+
+# 历史记录
+history/
 
 # 系统文件
 .DS_Store
